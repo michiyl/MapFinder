@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <drawable name="placeholder_loadingscreen">@drawable/default_loadingscreen</drawable>
+    <drawable name="placeholder_loadingscreen">@drawable/loadscreen_mp_burg</drawable>
 </resources>

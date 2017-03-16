@@ -9,9 +9,17 @@
               android:orientation="vertical"
               tools:background="@drawable/w1714">
 
+
+    <!--
+     It's not a useless FrameLayout as it does in fact make it
+     possible to have the TextView elements on top of the
+     ImageView element. This is the desired look.
+     Without having to change code, this is acceptable for now.
+     -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -29,7 +37,7 @@
             android:layout_gravity="bottom"
             android:background="@color/colorTextMapNameBG"
             android:gravity="center"
-            android:paddingStart="@dimen/maplist_separator_margin"
+            android:paddingBottom="@dimen/maplist_separator_margin"
             android:paddingTop="@dimen/maplist_separator_margin"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
