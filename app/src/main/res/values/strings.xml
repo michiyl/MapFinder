@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MapFinder</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="default_mapIngameName"> Ingame-Kartenname einfügen! </string>
+    <string name="default_mapConsoleName"> Console-Kartenname einfügen! </string>
+    <string name="add">hinzufügen</string>
+    <string name="delete">löschen</string>
+</resources>
