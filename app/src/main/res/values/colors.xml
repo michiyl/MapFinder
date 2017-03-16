@@ -5,4 +5,5 @@
     <color name="colorAccent">#0a7b3b</color>
     <color name="colorTextMapNameBG">#94ffffff</color>
     <color name="textWhite">#ffffff</color>
+    <color name="imagebutton_deleteGrayBackground">#00ffffff</color>
 </resources>

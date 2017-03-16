@@ -2,31 +2,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:layout_height="256dp"
+              android:layout_marginBottom="@dimen/maplist_separator_margin"
+              android:layout_marginTop="@dimen/maplist_separator_margin"
               android:orientation="vertical"
               tools:background="@drawable/w1714">
 
-    <TextView
-        android:id="@+id/id"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Map Name"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@color/textWhite"/>
+        android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="match_parent"
-        android:layout_height="192dp"
-        app:srcCompat="@drawable/default_loadingscreen"/>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/imagebutton_deleteGrayBackground"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/placeholder_loadingscreen"/>
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="mp_mapname"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@color/textWhite"/>
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/colorTextMapNameBG"
+            android:gravity="center"
+            android:paddingStart="@dimen/maplist_separator_margin"
+            android:paddingTop="@dimen/maplist_separator_margin"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            android:textColor="@color/textWhite"
+            tools:text="mp_mapname"/>
+
+        <TextView
+            android:id="@+id/id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/colorTextMapNameBG"
+            android:gravity="center"
+            android:paddingStart="@dimen/maplist_separator_margin"
+            android:paddingTop="@dimen/maplist_separator_margin"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            android:textColor="@color/textWhite"
+            tools:text="Map Name"/>
+
+    </FrameLayout>
+
 </LinearLayout>
