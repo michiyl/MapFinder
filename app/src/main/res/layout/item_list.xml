@@ -8,7 +8,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_marginLeft="16dp"
                                         android:layout_marginRight="16dp"
-                                        android:background="@drawable/placeholder_loadingscreen"
+                                        android:background="@android:color/background_dark"
                                         app:layoutManager="LinearLayoutManager"
                                         tools:context="com.project.michiyl.mapfinder.ItemListActivity"
                                         tools:listitem="@layout/item_list_content"/>
