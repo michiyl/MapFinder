@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.project.michiyl.mapfinder.dummy.DummyContent;
+import com.project.michiyl.mapfinder.dummy.MapContent;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -28,6 +29,7 @@ public class ItemDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
+    private MapContent.MapItem myMapItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -49,11 +51,13 @@ public class ItemDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            myMapItem = new MapContent.MapItem("Test Map", "mp_testmap", "This is the test map description. \nAnd a new line.");
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(myMapItem.getIngameName());
             }
         }
     }
@@ -67,6 +71,7 @@ public class ItemDetailFragment extends Fragment {
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.item_detailText)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.item_detailText)).setText(myMapItem.getDescription());
 
         }
 
