@@ -1,5 +1,11 @@
 package com.project.michiyl.mapfinder.dummy;
 
+import android.graphics.Path;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,28 +22,41 @@ public class DummyContent {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    public static final List<DummyItem> ITEM_LIST = new ArrayList<DummyItem>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static final Map<String, DummyItem> ITEM_HASHMAP = new HashMap<String, DummyItem>();
 
-    private static final int COUNT = 25;
+    private static final int COUNT;// = 2; //only make this many entries
 
     static {
         // Add some sample items.
+
+        int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
+
+        File f = MapContent.MapItem.myMapDirectory;
+        String[] names = f.list();
+        for (String name : names) {
+            Log.d("michiyl", name);
+        }
+
+        COUNT = countOfDirectories;
+
         for (int i = 1; i <= COUNT; i++) {
             addItem(createDummyItem(i));
         }
     }
 
     private static void addItem(DummyItem item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_LIST.add(item);
+        ITEM_HASHMAP.put(item.id, item);
     }
 
     private static DummyItem createDummyItem(int position) {
+        // erzeuge ein neues DummyItem mit id, content, details
+        //return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
         return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
     }
 

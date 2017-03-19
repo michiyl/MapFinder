@@ -1,7 +1,16 @@
 package com.project.michiyl.mapfinder.dummy;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,6 +100,79 @@ public class MapContent {
         public int compareTo(@NonNull MapItem mapItem) {
             return this.consoleName.compareTo(mapItem.consoleName);
         }
+
+
+        void loadFromFile(String directoryNameOrConsoleName) {
+
+            File myMapFile = new File(myMapDirectory.getAbsolutePath() + "/" + directoryNameOrConsoleName);
+
+            if(!myMapFile.exists()) {
+                return; // do nothing
+            }
+            else {
+
+            }
+        }
+
+
+        /**
+         * myMapDirectory is: <br>
+         *     <b>/storage/sdcard/MapFinder/CoD4MW/</b>
+         */
+        public static File myMapDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MapFinder/CoD4MW/");
+
+        private void mapper() {
+            // wenn unter Dateipfad vorhanden, dann auslesen und anlegen
+            File dummyMapDir = new File(myMapDirectory + "/mp_dummymap");
+            if(myMapDirectory.exists()) {
+                doWithFile(dummyMapDir, "name_ingame.txt", "Dummy Map");
+                doWithFile(dummyMapDir, "name_console.txt", "mp_dummymap");
+                doWithFile(dummyMapDir, "description.txt", "This is a \ndescription");
+            } /* else: nothing */
+        }
+
+        private String getConsoleNameFromFile(File myfile) {
+
+
+            try {
+                BufferedReader inputReader2 = new BufferedReader(new InputStreamReader(new FileInputStream(myfile)));
+
+                String inputString2;
+
+                StringBuffer stringBuffer2 = new StringBuffer();
+
+                while ((inputString2 = inputReader2.readLine()) != null) {
+
+                    stringBuffer2.append(inputString2);
+                }
+
+                return stringBuffer2.toString();
+            }
+            catch (Exception e) {
+
+            }
+            return null;
+
+        }
+
+        private void doWithFile(File directory, String filenameWithExtension, String content) {
+            if(!directory.exists()) {
+                directory.mkdir();
+            }
+            File outputFile_names = new File(directory, "/"+filenameWithExtension);
+            try {
+                FileOutputStream fos = new FileOutputStream(outputFile_names, false); // don't append -> overwrite!
+                BufferedOutputStream bos = new BufferedOutputStream(fos);
+                bos.write(content.toString().getBytes());
+                bos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
 }

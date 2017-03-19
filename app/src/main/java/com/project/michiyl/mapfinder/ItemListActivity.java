@@ -3,12 +3,14 @@ package com.project.michiyl.mapfinder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,11 @@ import android.widget.TextView;
 
 import com.project.michiyl.mapfinder.dummy.DummyContent;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,6 +42,13 @@ public class ItemListActivity extends AppCompatActivity {
      */
     private boolean twoWayDisplay;
 
+    // where is our MapFinder CoD4MW directory?
+    /**
+     * myMapDirectory is: <br>
+     *     <b>/storage/sdcard/MapFinder/CoD4MW/</b>
+     */
+    File myMapDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MapFinder/CoD4MW/");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +62,44 @@ public class ItemListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+
+                // create a File object for the parent directory
+                //File myMapDirectory = new File("/sdcard/MapFinder/CoD4MW/");    // don't forget to end with /
+                Log.d("ItemListActivity", "onClick: " + Environment.getExternalStorageDirectory().getAbsolutePath());
+
+                // have the object build the directory structure, if needed.
+                if(myMapDirectory.exists() == false) {
+                    myMapDirectory.mkdirs();
+                }
+                Log.d("ItemListActivity", "after onClick: " + myMapDirectory.getAbsolutePath());
+                // create a File object for the output file
+                //File outputFile = new File(myMapDirectory, "/mapname.txt");
+                // now attach the OutputStream to the file object, instead of a String representation
+                /*
+                try {
+                    FileOutputStream fos = new FileOutputStream(outputFile, false); // don't append -> overwrite!
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+                    bos.write("Test Map\nmp_testmap\nThis is a description.".toString().getBytes());
+                    bos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                */
+
+
+                mapper();
+
+                /*
+                Snackbar.make(view, "Output file created: " + outputFile.exists(), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                Log.d("ItemListActivity", "after save: " + outputFile.getAbsolutePath());
+
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //        .setAction("Action", null).show();
+                */
             }
         });
 
@@ -66,8 +116,47 @@ public class ItemListActivity extends AppCompatActivity {
         }
     }
 
+    private void mapper() {
+
+        // wenn unter Dateipfad vorhanden, dann auslesen und anlegen
+        File dummyMapDir = new File(myMapDirectory + "/mp_dummymap");
+
+        if(myMapDirectory.exists()) {
+
+
+            doWithFile(dummyMapDir, "name_ingame.txt", "Dummy Map");
+            doWithFile(dummyMapDir, "name_console.txt", "mp_dummymap");
+            doWithFile(dummyMapDir, "description.txt", "This is a description.\n With a new line!");
+        } /* else: nothing */
+    }
+
+    private void doWithFile(File directory, String filenameWithExtension, String content) {
+        if(!directory.exists()) {
+            directory.mkdir();
+        }
+		
+        File outputFile = new File(directory, "/"+filenameWithExtension);
+		//TODO: create boolean to check wether we can overwrite or not!
+		if(outputFile.exists()) {
+			return;
+		}
+		else {
+			try {
+				FileOutputStream fos = new FileOutputStream(outputFile, false); // don't append -> overwrite!
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				bos.write(content.toString().getBytes());
+				bos.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+    }
+
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEM_LIST));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -89,8 +178,8 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(/*mValues.get(position).id*/ position + " ! ");    // here we set the text
+            holder.mContentView.setText(/*mValues.get(position).content + */ position + "?"); // here, too!
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
