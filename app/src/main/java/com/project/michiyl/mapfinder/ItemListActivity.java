@@ -1,7 +1,12 @@
 package com.project.michiyl.mapfinder;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -9,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +22,14 @@ import android.widget.TextView;
 
 
 import com.project.michiyl.mapfinder.dummy.DummyContent;
+import com.project.michiyl.mapfinder.dummy.MapContent;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,6 +48,8 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean twoWayDisplay;
+    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 456;   // irgendeine Zahl, MUSS aber eindeutig sein
+    private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 789;   // irgendeine Zahl, MUSS aber eindeutig sein
 
     // where is our MapFinder CoD4MW directory?
     /**
@@ -53,6 +62,25 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+
+        // let's ask for permissions in Android pre-4.4
+        if(Build.VERSION.SDK_INT >= 23) {
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &
+                    checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+            }
+            else
+            {
+                doCheckEnvironmentExternalStorage();
+            }
+        }
+        else
+        {
+            doCheckEnvironmentExternalStorage();
+        }
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -116,6 +144,45 @@ public class ItemListActivity extends AppCompatActivity {
         }
     }
 
+    // needed for pre-4.4-permission check
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if( (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) &&
+                (grantResults.length > 0) &&
+                (grantResults[0] == PackageManager.PERMISSION_GRANTED) )
+        {
+            doCheckEnvironmentExternalStorage();
+        }
+
+        if( (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) &&
+                (grantResults.length > 0) &&
+                (grantResults[0] == PackageManager.PERMISSION_GRANTED) )
+        { /*empty*/ }
+    }
+
+    private void doCheckEnvironmentExternalStorage() {
+        // Ausgabe von Text: wenn TRUE, dann "", wenn FALSE, dann " nicht"
+        //Log.d("michiyl", "Medium kann entfernt werden: " + Environment.isExternalStorageRemovable());
+
+        // Statusabfrage
+        String state = Environment.getExternalStorageState();
+        boolean canRead, canWrite;
+        switch (state) {
+            case Environment.MEDIA_MOUNTED:
+                canRead = canWrite = true;
+                break;
+            case Environment.MEDIA_MOUNTED_READ_ONLY:
+                canRead = true;
+                canWrite = false;
+                break;
+            default:
+                canRead = canWrite = true;
+        }
+
+        //Log.d("michiyl", "canRead: " +canRead+ ", canWrite: " +canWrite);
+    }
+
+
+
     private void mapper() {
 
         // wenn unter Dateipfad vorhanden, dann auslesen und anlegen
@@ -124,13 +191,15 @@ public class ItemListActivity extends AppCompatActivity {
         if(myMapDirectory.exists()) {
 
 
-            doWithFile(dummyMapDir, "name_ingame.txt", "Dummy Map");
-            doWithFile(dummyMapDir, "name_console.txt", "mp_dummymap");
-            doWithFile(dummyMapDir, "description.txt", "This is a description.\n With a new line!");
+            createDummyFiles(dummyMapDir, "name_ingame.txt", "Dummy Map");
+            createDummyFiles(dummyMapDir, "name_console.txt", "mp_dummymap");
+            createDummyFiles(dummyMapDir, "description.txt", "This is a description.\n With a new line!");
         } /* else: nothing */
     }
 
-    private void doWithFile(File directory, String filenameWithExtension, String content) {
+
+
+    private void createDummyFiles(File directory, String filenameWithExtension, String content) {
         if(!directory.exists()) {
             directory.mkdir();
         }
@@ -138,6 +207,20 @@ public class ItemListActivity extends AppCompatActivity {
         File outputFile = new File(directory, "/"+filenameWithExtension);
 		//TODO: create boolean to check wether we can overwrite or not!
 		if(outputFile.exists()) {
+
+            /*
+            //make the file known to the media scanner so that it shows in Explorer without device reboot
+            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            intent.setData(Uri.fromFile(outputFile));
+            Log.d("michiyl", "intent Uri: " + outputFile + ", " + intent.toString());
+            sendBroadcast(intent);
+            */
+
+            // Taken from:
+            // https://skotagiri.wordpress.com/2012/08/23/make-files-created-by-android-applications-visible-in-windows-without-a-reboot/
+            MediaScannerHelper mediaScannerHelper = new MediaScannerHelper();
+            mediaScannerHelper.addFile(outputFile.getAbsolutePath().toString());
+
 			return;
 		}
 		else {
@@ -175,11 +258,60 @@ public class ItemListActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
+
+        /**
+         *
+         * @param position        Which directory index are we going to read from?
+         * @param readConsoleName If set to "true" method will read the console name file. <br>
+         *                        If set to "false" method will read the ingame name file.
+         * @return
+         */
+        String readNameFromFile(int position, boolean readConsoleName) {
+            int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
+            if(countOfDirectories <= 0) {
+                Log.e("michiyl", "ERROR --- NO DIRECTORY!");
+                return "";
+            }
+
+            File theDirectory = MapContent.MapItem.myMapDirectory;
+            String[] filenames = theDirectory.list();
+            StringBuilder sb = new StringBuilder("");
+            File myFile = null;
+
+            // check which one we want to read from this time
+            if(readConsoleName) {
+                // FULL path necessary!
+                myFile = new File(theDirectory.getAbsolutePath() + "/" + filenames[position], "/name_console.txt");
+            }
+            if(! readConsoleName) {
+                // FULL path necessary!
+                myFile = new File(theDirectory.getAbsolutePath() + "/" + filenames[position], "/name_ingame.txt");
+            }
+            Log.d("michiyl", "myFile: " + myFile.toString());
+            Log.d("michiyl", "exists myFile: " + myFile.exists());
+            Log.d("michiyl", "canRead myFile: " + myFile.canRead());
+
+            try (BufferedReader br = new BufferedReader(new FileReader(myFile))) {
+                // read just the single line
+                sb.append(br.readLine());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Log.e("michiyl", "FileNotFoundException!", e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("michiyl", "IOException!", e);
+            }
+
+            Log.d("michiyl", "sb: " + sb.toString());
+            return sb.toString();
+        }
+
+
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(/*mValues.get(position).id*/ position + " ! ");    // here we set the text
-            holder.mContentView.setText(/*mValues.get(position).content + */ position + "?"); // here, too!
+            holder.mIdView.setText(/*mValues.get(position).id*/ readNameFromFile(position, true));    // here we set the text
+            holder.mContentView.setText(/*mValues.get(position).content + */ readNameFromFile(position, false)); // here, too!
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -227,4 +359,27 @@ public class ItemListActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
+    // Helper class to make our files visible without device reboot
+    // taken from:
+    // https://skotagiri.wordpress.com/2012/08/23/make-files-created-by-android-applications-visible-in-windows-without-a-reboot/
+    public class MediaScannerHelper implements MediaScannerConnection.MediaScannerConnectionClient {
+
+        public void addFile(String filename)
+        {
+            String [] paths = new String[1];
+            paths[0] = filename;
+            MediaScannerConnection.scanFile(getApplicationContext(), paths, null, this);
+        }
+
+        public void onMediaScannerConnected() {
+        }
+
+        public void onScanCompleted(String path, Uri uri) {
+            Log.i("ScannerHelper","Scan done - path:" + path + " uri:" + uri);
+        }
+    }
+
 }

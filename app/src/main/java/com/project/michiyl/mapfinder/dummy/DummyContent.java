@@ -39,7 +39,7 @@ public class DummyContent {
         File f = MapContent.MapItem.myMapDirectory;
         String[] names = f.list();
         for (String name : names) {
-            Log.d("michiyl", name);
+            Log.d("michiyl", "directories inside MapFinder/CoD4MW/ : " + name);
         }
 
         COUNT = countOfDirectories;
