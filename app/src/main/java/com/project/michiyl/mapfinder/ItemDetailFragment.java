@@ -7,10 +7,13 @@ import android.graphics.BitmapFactory;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -117,6 +120,7 @@ public class ItemDetailFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.detail_gridview);
         gridView.setAdapter(new ImageAdapter(getActivity()));
 
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -158,14 +162,18 @@ public class ItemDetailFragment extends Fragment {
         //---returns an ImageView view---
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            ImageView imageView;
+            SquareImageView imageView;
             if (convertView == null) {
-                imageView = new ImageView(context);
-                imageView.setLayoutParams(new GridView.LayoutParams(185, 185));
+                imageView = new SquareImageView(context);
+                //imageView.setLayoutParams(new GridView.LayoutParams(200, 200));
+                imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT,GridView.LayoutParams.MATCH_PARENT));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(5, 5, 5, 5);
+                //imageView.setMaxHeight(256);
+                //imageView.setMaxWidth(256);
+
             } else {
-                imageView = (ImageView) convertView;
+                imageView = (SquareImageView) convertView;
             }
             Bitmap bmImg = BitmapFactory.decodeFile(imageIDs[position]);
             // just don't use images in the size of megabytes!
@@ -174,6 +182,28 @@ public class ItemDetailFragment extends Fragment {
             // TODO: check the filesize and display a warning above a certain limit
             imageView.setImageBitmap(bmImg);
             return imageView;
+        }
+    }
+
+
+
+    public class SquareImageView extends android.support.v7.widget.AppCompatImageView {
+        public SquareImageView(Context context) {
+            super(context);
+        }
+
+        public SquareImageView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public SquareImageView(Context context, AttributeSet attrs, int defStyle) {
+            super(context, attrs, defStyle);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
         }
     }
 }

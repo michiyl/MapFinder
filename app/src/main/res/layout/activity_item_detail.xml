@@ -35,10 +35,16 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!--
+    Setting the background here sets the background for the child items, too.
+    So no more awkward free space beyond our layout elements when the background
+    image is large.
+    -->
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/item_detail_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/w1714"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.FloatingActionButton

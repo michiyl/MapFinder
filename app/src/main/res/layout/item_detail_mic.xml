@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/newlayout"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@drawable/w1714"
-              android:orientation="vertical"
-              android:weightSum="1">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/imagebutton_deleteGrayBackground"
+             android:orientation="vertical"
+             android:weightSum="1">
 
 
     <!--
@@ -16,43 +15,59 @@
      ImageView element. This is the desired look.
      Without having to change code, this is acceptable for now.
      -->
-    <TextView
-        android:id="@+id/item_detailText"
-        style="?android:attr/textAppearanceLarge"
+
+    <LinearLayout
+        android:id="@+id/newlayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:singleLine="false"
-        android:text="Test Text"
-        android:textAlignment="viewStart"
-        android:textColor="@color/textWhite"
-        android:textIsSelectable="true"
-        tools:context="com.project.michiyl.mapfinder.ItemDetailFragment"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_detailText"
+            style="?android:attr/textAppearanceLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:singleLine="false"
+            android:text="Test Text"
+            android:textAlignment="viewStart"
+            android:textColor="@color/textWhite"
+            android:textIsSelectable="true"
+            tools:context="com.project.michiyl.mapfinder.ItemDetailFragment"/>
+
+        <!--
+        <ImageView
+            android:id="@+id/item_detailImage1"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:background="@color/imagebutton_deleteGrayBackground"
+            android:cropToPadding="false"
+            android:padding="@dimen/maplist_separator_margin"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:srcCompat="@drawable/placeholder_loadingscreen"/>
+        -->
+        <com.project.michiyl.mapfinder.MyGridView
+            android:id="@+id/detail_gridview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:contextClickable="true"
+            android:horizontalSpacing="0dp"
+            android:numColumns="2"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="0dp"/>
+
+    </LinearLayout>
 
     <ImageView
-        android:id="@+id/item_detailImage1"
-        android:layout_width="222dp"
-        android:layout_height="175dp"
-        android:background="@color/imagebutton_deleteGrayBackground"
-        android:cropToPadding="false"
-        android:padding="@dimen/maplist_separator_margin"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/placeholder_loadingscreen"/>
-
-    <GridView
-        android:id="@+id/detail_gridview"
+        android:id="@+id/imageView3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:choiceMode="singleChoice"
-        android:columnWidth="90dp"
-        android:contextClickable="true"
-        android:gravity="center"
-        android:horizontalSpacing="10dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="10dp"
-        tools:mockup="@drawable/default_loadingscreen"/>
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:visibility="gone"
+        app:srcCompat="@drawable/default_loadingscreen"/>
 
-</LinearLayout>
+</FrameLayout>
 
 
