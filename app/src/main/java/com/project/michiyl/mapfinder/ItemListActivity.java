@@ -54,7 +54,8 @@ public class ItemListActivity extends AppCompatActivity {
     // where is our MapFinder CoD4MW directory?
     /**
      * myMapDirectory is: <br>
-     *     <b>/storage/sdcard/MapFinder/CoD4MW/</b>
+     *     <b>/storage/sdcard/MapFinder/CoD4MW/</b> on pre-Android 5.0 <br>
+     *     <b>/storage/emulated/0/MapFinder/CoD4MW</b> on Android 5+
      */
     File myMapDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MapFinder/CoD4MW/");
 
@@ -63,7 +64,7 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
-        // let's ask for permissions in Android pre-4.4
+        // let's ask for permissions in Android post-4.4
         if(Build.VERSION.SDK_INT >= 23) {
             if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &
                     checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
@@ -266,7 +267,7 @@ public class ItemListActivity extends AppCompatActivity {
          *                        If set to "false" method will read the ingame name file.
          * @return
          */
-        String readNameFromFile(int position, boolean readConsoleName) {
+        public String readNameFromFile(int position, boolean readConsoleName) {
             int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
             if(countOfDirectories <= 0) {
                 Log.e("michiyl", "ERROR --- NO DIRECTORY!");

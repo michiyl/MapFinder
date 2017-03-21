@@ -6,9 +6,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="@drawable/w1714"
-              android:weightSum="1"
-              tools:background="@drawable/w1714"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:weightSum="1">
 
 
     <!--
@@ -23,7 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:singleLine="false"
         android:text="Test Text"
+        android:textAlignment="viewStart"
         android:textColor="@color/textWhite"
         android:textIsSelectable="true"
         tools:context="com.project.michiyl.mapfinder.ItemDetailFragment"/>
@@ -39,12 +40,18 @@
         app:srcCompat="@drawable/placeholder_loadingscreen"/>
 
     <GridView
+        android:id="@+id/detail_gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:choiceMode="singleChoice"
-        android:columnWidth="@dimen/text_margin"
+        android:columnWidth="90dp"
         android:contextClickable="true"
-        />
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        tools:mockup="@drawable/default_loadingscreen"/>
 
 </LinearLayout>
 

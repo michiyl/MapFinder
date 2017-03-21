@@ -97,7 +97,7 @@ public class DummyContent {
             // read just the lines
             if(br.hasNext())
                 while( br.hasNext()) {
-                    sb += br.nextLine();
+                    sb += br.nextLine() + "\n"; // it won't read \n without adding it
             }
 
         } catch (FileNotFoundException e) {

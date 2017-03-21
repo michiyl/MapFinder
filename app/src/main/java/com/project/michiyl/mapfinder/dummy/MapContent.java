@@ -115,9 +115,11 @@ public class MapContent {
         }
 
 
+        // where is our MapFinder CoD4MW directory?
         /**
          * myMapDirectory is: <br>
-         *     <b>/storage/sdcard/MapFinder/CoD4MW/</b>
+         *     <b>/storage/sdcard/MapFinder/CoD4MW/</b> on pre-Android 5.0 <br>
+         *     <b>/storage/emulated/0/MapFinder/CoD4MW</b> on Android 5+
          */
         public static File myMapDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MapFinder/CoD4MW/");
 

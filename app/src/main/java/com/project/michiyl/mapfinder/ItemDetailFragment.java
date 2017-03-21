@@ -1,16 +1,28 @@
 package com.project.michiyl.mapfinder;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.project.michiyl.mapfinder.dummy.DummyContent;
 import com.project.michiyl.mapfinder.dummy.MapContent;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -31,6 +43,30 @@ public class ItemDetailFragment extends Fragment {
     private DummyContent.DummyItem mItem;
     private MapContent.MapItem myMapItem;
 
+    static String[] imageIDs;
+
+    static {
+        File theDirectory = MapContent.MapItem.myMapDirectory;
+        String[] filenames = theDirectory.list();
+        File myimages = new File(theDirectory + "/" + filenames[1], "/images/");
+        Log.d("michiyl", "static: " + myimages.getAbsolutePath() + " " + myimages.list().length);
+        String[] filenames2 = myimages.list();
+
+        if(myimages.list().length > 0) {
+            imageIDs = new String[myimages.list().length];
+
+            for (int i = 0; i < myimages.list().length; i++) {
+                imageIDs[i] = theDirectory + "/" + filenames[1] + "/images/" + filenames2[i];
+            }
+        }
+        else {
+            imageIDs = new String[0];
+
+        }
+        //imageIDs = filenames[0]+"/images/"
+    }
+
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -44,7 +80,6 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
@@ -60,6 +95,10 @@ public class ItemDetailFragment extends Fragment {
                 appBarLayout.setTitle(myMapItem.getIngameName());
             }
         }
+
+
+
+
     }
 
     @Override
@@ -72,9 +111,69 @@ public class ItemDetailFragment extends Fragment {
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.item_detailText)).setText(mItem.details);
             //((TextView) rootView.findViewById(R.id.item_detailText)).setText(myMapItem.getDescription());
-
         }
 
+        // == Grid view stuff ==
+        GridView gridView = (GridView) rootView.findViewById(R.id.detail_gridview);
+        gridView.setAdapter(new ImageAdapter(getActivity()));
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(getActivity(), "pic " + position + " selected", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+
         return rootView;
+    }
+
+
+
+    public class ImageAdapter extends BaseAdapter
+    {
+        private Context context;
+
+        public ImageAdapter(Context c)
+        {
+            context = c;
+        }
+
+        //---returns the number of images---
+        public int getCount() {
+            return imageIDs.length;
+        }
+
+        //---returns the ID of an item---
+        public Object getItem(int position) {
+            return position;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        //---returns an ImageView view---
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            ImageView imageView;
+            if (convertView == null) {
+                imageView = new ImageView(context);
+                imageView.setLayoutParams(new GridView.LayoutParams(185, 185));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setPadding(5, 5, 5, 5);
+            } else {
+                imageView = (ImageView) convertView;
+            }
+            Bitmap bmImg = BitmapFactory.decodeFile(imageIDs[position]);
+            // just don't use images in the size of megabytes!
+            //Bitmap compressedBitmap = Bitmap.createBitmap(bmImg);
+            //compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, null);
+            // TODO: check the filesize and display a warning above a certain limit
+            imageView.setImageBitmap(bmImg);
+            return imageView;
+        }
     }
 }
