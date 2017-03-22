@@ -190,12 +190,15 @@ public class ItemListActivity extends AppCompatActivity {
         File dummyMapDir = new File(myMapDirectory + "/mp_dummymap");
 
         if(myMapDirectory.exists()) {
-
-
             createDummyFiles(dummyMapDir, "name_ingame.txt", "Dummy Map");
             createDummyFiles(dummyMapDir, "name_console.txt", "mp_dummymap");
             createDummyFiles(dummyMapDir, "description.txt", "This is a description.\n With a new line!");
-        } /* else: nothing */
+        }
+        else {
+            // if not created - create it and run through again
+            dummyMapDir.mkdir();
+            mapper();
+        }
     }
 
 
