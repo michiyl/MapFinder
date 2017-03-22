@@ -59,7 +59,7 @@ public class DummyContent {
     private static DummyItem createDummyItem(int position) {
         // erzeuge ein neues DummyItem mit id, content, details
         //return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
+        return new DummyItem(String.valueOf(position), "" + position, makeDetails(position));
     }
 
     private static String makeDetails(int position) {
@@ -101,9 +101,6 @@ public class DummyContent {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.e("michiyl", "FileNotFoundException!", e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("michiyl", "IOException!", e);
         }
 
         Log.d("michiyl", "sb: " + sb);

@@ -49,25 +49,30 @@ public class ItemDetailFragment extends Fragment {
 
     static String[] imageIDs;
 
+
+    // here we look inside a specific directory and count the amount of images
+    // then we initialize an array of Strings with this amount
+    // and fill the array with the full path names
     static {
+        stuffWithImageDirectories(0);
+    }
+
+    static void stuffWithImageDirectories(int position) {
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
-        File myimages = new File(theDirectory + "/" + filenames[0], "/images/");
-        Log.d("michiyl", "static: " + myimages.getAbsolutePath() + " " + myimages.list().length);
+        File myimages = new File(theDirectory + "/" + filenames[position], "/images/");
         String[] filenames2 = myimages.list();
 
         if(myimages.list().length > 0) {
             imageIDs = new String[myimages.list().length];
 
             for (int i = 0; i < myimages.list().length; i++) {
-                imageIDs[i] = theDirectory + "/" + filenames[0] + "/images/" + filenames2[i];
+                imageIDs[i] = theDirectory + "/" + filenames[position] + "/images/" + filenames2[i];
             }
         }
         else {
             imageIDs = new String[0];
-
         }
-        //imageIDs = filenames[0]+"/images/"
     }
 
 
@@ -86,11 +91,13 @@ public class ItemDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
+            Log.d("michiyl", "onCreate: " + DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID)));
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItem = DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID));
             myMapItem = new MapContent.MapItem("Test Map", "mp_testmap", "This is the test map description. \nAnd a new line.");
+
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -99,10 +106,6 @@ public class ItemDetailFragment extends Fragment {
                 appBarLayout.setTitle(myMapItem.getIngameName());
             }
         }
-
-
-
-
     }
 
     @Override
@@ -139,6 +142,10 @@ public class ItemDetailFragment extends Fragment {
         public ImageAdapter(Context c)
         {
             context = c;
+
+            int itemPosition = Integer.valueOf(String.valueOf(DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID))));
+            Log.d("michiyl", "itemPosition: " + itemPosition);
+            stuffWithImageDirectories(itemPosition-1);
         }
 
         //---returns the number of images---
