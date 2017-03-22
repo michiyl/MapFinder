@@ -160,9 +160,9 @@ public class ItemDetailFragment extends Fragment {
         }
 
         //---returns an ImageView view---
-        public View getView(int position, View convertView, ViewGroup parent)
+        public View getView(final int position, View convertView, ViewGroup parent)
         {
-            SquareImageView imageView;
+            final SquareImageView imageView;
             if (convertView == null) {
                 imageView = new SquareImageView(context);
                 //imageView.setLayoutParams(new GridView.LayoutParams(200, 200));
@@ -171,6 +171,30 @@ public class ItemDetailFragment extends Fragment {
                 imageView.setPadding(5, 5, 5, 5);
                 //imageView.setMaxHeight(256);
                 //imageView.setMaxWidth(256);
+
+                // OnClickListener chaining:
+                // the first listener "opens" the image:
+                //   - it fills the invisible "big image" view with the image that was clicked on,
+                //   - after that it turns it visible
+                // this "big image" view also has a onClickListener which "closes" the image:
+                //   - it turns the image invisible after clicking on it
+                // TODO: increase performance
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final ImageView bigImageView = (ImageView) getActivity().findViewById(R.id.bigDetailImage);
+                        Bitmap bigImage = BitmapFactory.decodeFile(imageIDs[position]);
+                        bigImageView.setImageBitmap(bigImage);
+                        bigImageView.setVisibility(View.VISIBLE);
+
+                        bigImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                bigImageView.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    }
+                });
 
             } else {
                 imageView = (SquareImageView) convertView;

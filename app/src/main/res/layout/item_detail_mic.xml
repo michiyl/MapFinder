@@ -61,11 +61,10 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/bigDetailImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.5"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:srcCompat="@drawable/default_loadingscreen"/>
 
 </FrameLayout>
