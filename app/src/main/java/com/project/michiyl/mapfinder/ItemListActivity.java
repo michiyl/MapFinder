@@ -266,8 +266,8 @@ public class ItemListActivity extends AppCompatActivity {
         /**
          *
          * @param position        Which directory index are we going to read from?
-         * @param readConsoleName If set to "true" method will read the console name file. <br>
-         *                        If set to "false" method will read the ingame name file.
+         * @param readConsoleName If set to "true" method will read the <b>console</b> name file. <br>
+         *                        If set to "false" method will read the <b>ingame</b> name file.
          * @return
          */
         public String readNameFromFile(int position, boolean readConsoleName) {
@@ -306,7 +306,7 @@ public class ItemListActivity extends AppCompatActivity {
                 Log.e("michiyl", "IOException!", e);
             }
 
-            Log.d("michiyl", "sb: " + sb.toString());
+            //Log.d("michiyl", "sb: " + sb.toString());
             return sb.toString();
         }
 

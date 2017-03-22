@@ -2,6 +2,7 @@ package com.project.michiyl.mapfinder.dummy;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -93,6 +95,57 @@ public class MapContent {
         public void setDescription(String newDescription) {
             this.description = newDescription;
         }
+
+
+
+        /**
+         *
+         * @param position        Which directory index are we going to read from?
+         * @param readConsoleName If set to "true" method will read the <b>console</b> name file. <br>
+         *                        If set to "false" method will read the <b>ingame</b> name file.
+         * @return
+         */
+        public String readNameFromFile(int position, boolean readConsoleName) {
+            int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
+            if(countOfDirectories <= 0) {
+                Log.e("michiyl", "ERROR --- NO DIRECTORY!");
+                return "";
+            }
+
+            File theDirectory = MapContent.MapItem.myMapDirectory;
+            String[] filenames = theDirectory.list();
+            StringBuilder sb = new StringBuilder("");
+            File myFile = null;
+
+            // check which one we want to read from this time
+            if(readConsoleName) {
+                // FULL path necessary!
+                myFile = new File(theDirectory.getAbsolutePath() + "/" + filenames[position], "/name_console.txt");
+            }
+            if(! readConsoleName) {
+                // FULL path necessary!
+                myFile = new File(theDirectory.getAbsolutePath() + "/" + filenames[position], "/name_ingame.txt");
+            }
+            Log.d("michiyl", "myFile: " + myFile.toString());
+            Log.d("michiyl", "exists myFile: " + myFile.exists());
+            Log.d("michiyl", "canRead myFile: " + myFile.canRead());
+
+            try (BufferedReader br = new BufferedReader(new FileReader(myFile))) {
+                // read just the single line
+                sb.append(br.readLine());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Log.e("michiyl", "FileNotFoundException!", e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("michiyl", "IOException!", e);
+            }
+
+            //Log.d("michiyl", "sb: " + sb.toString());
+            return sb.toString();
+        }
+
+
 
 
         // compareTo will only look for the console name since this simply cannot be there twice.

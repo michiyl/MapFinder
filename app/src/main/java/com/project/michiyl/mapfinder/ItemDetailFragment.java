@@ -12,21 +12,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.androidquery.AQuery;
 import com.project.michiyl.mapfinder.dummy.DummyContent;
 import com.project.michiyl.mapfinder.dummy.MapContent;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -50,24 +45,21 @@ public class ItemDetailFragment extends Fragment {
     static String[] imageIDs;
 
 
-    // here we look inside a specific directory and count the amount of images
+    // here we look inside a specific directory position and count the amount of images,
     // then we initialize an array of Strings with this amount
     // and fill the array with the full path names
-    static {
-        stuffWithImageDirectories(0);
-    }
-
-    static void stuffWithImageDirectories(int position) {
+    static void findCorrectImageDirectory(int position) {
+        String slashImagesSlash = "/images/";
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
-        File myimages = new File(theDirectory + "/" + filenames[position], "/images/");
+        File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
 
         if(myimages.list().length > 0) {
             imageIDs = new String[myimages.list().length];
 
             for (int i = 0; i < myimages.list().length; i++) {
-                imageIDs[i] = theDirectory + "/" + filenames[position] + "/images/" + filenames2[i];
+                imageIDs[i] = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[i];
             }
         }
         else {
@@ -91,18 +83,21 @@ public class ItemDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
+
+            int itemPosition = Integer.valueOf(String.valueOf(DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID))));
             Log.d("michiyl", "onCreate: " + DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID)));
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItem = DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID));
             myMapItem = new MapContent.MapItem("Test Map", "mp_testmap", "This is the test map description. \nAnd a new line.");
+            myMapItem.setIngameName(myMapItem.readNameFromFile(itemPosition-1,false));
 
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                //appBarLayout.setTitle(mItem.content);
                 appBarLayout.setTitle(myMapItem.getIngameName());
             }
         }
@@ -112,7 +107,7 @@ public class ItemDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_detail_mic, container, false);
 
-        // Show the dummy content as text in a TextView.
+        // Show the (dummy) content as text in a TextView.
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.item_detailText)).setText(mItem.details);
             //((TextView) rootView.findViewById(R.id.item_detailText)).setText(myMapItem.getDescription());
@@ -121,15 +116,15 @@ public class ItemDetailFragment extends Fragment {
         // == Grid view stuff ==
         GridView gridView = (GridView) rootView.findViewById(R.id.detail_gridview);
         gridView.setAdapter(new ImageAdapter(getActivity()));
-
-
+        // GridView onClickListener still necessary?
+        /*
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(getActivity(), "pic " + position + " selected", Toast.LENGTH_SHORT).show();
-
             }
         });
+        */
         return rootView;
     }
 
@@ -145,7 +140,7 @@ public class ItemDetailFragment extends Fragment {
 
             int itemPosition = Integer.valueOf(String.valueOf(DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID))));
             Log.d("michiyl", "itemPosition: " + itemPosition);
-            stuffWithImageDirectories(itemPosition-1);
+            findCorrectImageDirectory(itemPosition-1);  // itemPosition starts with 1, we need 0-based
         }
 
         //---returns the number of images---

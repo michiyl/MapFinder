@@ -103,7 +103,7 @@ public class DummyContent {
             Log.e("michiyl", "FileNotFoundException!", e);
         }
 
-        Log.d("michiyl", "sb: " + sb);
+        //Log.d("michiyl", "sb: " + sb);
         return sb.toString();
 
     }
