@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidquery.AQuery;
 import com.project.michiyl.mapfinder.dummy.DummyContent;
 import com.project.michiyl.mapfinder.dummy.MapContent;
 
@@ -51,7 +52,7 @@ public class ItemDetailFragment extends Fragment {
     static {
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
-        File myimages = new File(theDirectory + "/" + filenames[1], "/images/");
+        File myimages = new File(theDirectory + "/" + filenames[0], "/images/");
         Log.d("michiyl", "static: " + myimages.getAbsolutePath() + " " + myimages.list().length);
         String[] filenames2 = myimages.list();
 
@@ -59,7 +60,7 @@ public class ItemDetailFragment extends Fragment {
             imageIDs = new String[myimages.list().length];
 
             for (int i = 0; i < myimages.list().length; i++) {
-                imageIDs[i] = theDirectory + "/" + filenames[1] + "/images/" + filenames2[i];
+                imageIDs[i] = theDirectory + "/" + filenames[0] + "/images/" + filenames2[i];
             }
         }
         else {
@@ -105,10 +106,8 @@ public class ItemDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_detail_mic, container, false);
-
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
@@ -128,9 +127,6 @@ public class ItemDetailFragment extends Fragment {
 
             }
         });
-
-
-
         return rootView;
     }
 
@@ -166,11 +162,10 @@ public class ItemDetailFragment extends Fragment {
             if (convertView == null) {
                 imageView = new SquareImageView(context);
                 //imageView.setLayoutParams(new GridView.LayoutParams(200, 200));
-                imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT,GridView.LayoutParams.MATCH_PARENT));
+                imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT,
+                                                                    GridView.LayoutParams.MATCH_PARENT));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(5, 5, 5, 5);
-                //imageView.setMaxHeight(256);
-                //imageView.setMaxWidth(256);
 
                 // OnClickListener chaining:
                 // the first listener "opens" the image:
@@ -199,12 +194,13 @@ public class ItemDetailFragment extends Fragment {
             } else {
                 imageView = (SquareImageView) convertView;
             }
-            Bitmap bmImg = BitmapFactory.decodeFile(imageIDs[position]);
+
             // just don't use images in the size of megabytes!
-            //Bitmap compressedBitmap = Bitmap.createBitmap(bmImg);
-            //compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, null);
+            Bitmap bmImg = BitmapFactory.decodeFile(imageIDs[position]);
+            Bitmap scaled = Bitmap.createScaledBitmap(bmImg, 256, 256, false);
             // TODO: check the filesize and display a warning above a certain limit
-            imageView.setImageBitmap(bmImg);
+            imageView.setImageBitmap(scaled);
+
             return imageView;
         }
     }

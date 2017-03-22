@@ -33,11 +33,10 @@ public class DummyContent {
      */
     public static final Map<String, DummyItem> ITEM_HASHMAP = new HashMap<String, DummyItem>();
 
-    private static final int COUNT;// = 2; //only make this many entries
+    private static final int COUNT; // = 2; //only create this many entries
 
     static {
         // Add some sample items.
-
         int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
 
         File f = MapContent.MapItem.myMapDirectory;
@@ -47,7 +46,6 @@ public class DummyContent {
         }
 
         COUNT = countOfDirectories;
-
         for (int i = 1; i <= COUNT; i++) {
             addItem(createDummyItem(i));
         }
