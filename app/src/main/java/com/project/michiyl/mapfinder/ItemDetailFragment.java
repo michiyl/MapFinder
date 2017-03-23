@@ -65,6 +65,9 @@ public class ItemDetailFragment extends Fragment {
         String[] filenames = theDirectory.list();
         File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
+        if(filenames2.length == 0) {
+            filenames2[0] = "";
+        }
 
         if(myimages.list().length > 0) {
             imageIDs = new String[myimages.list().length];
