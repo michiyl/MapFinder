@@ -70,11 +70,11 @@ public class ItemListActivity extends AppCompatActivity {
 
         // let's ask for permissions in Android post-4.4
         if(Build.VERSION.SDK_INT >= 23) {
-            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &
-                    checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                /* & checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED*/)
             {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+                //requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
             }
             else
             {
@@ -85,9 +85,6 @@ public class ItemListActivity extends AppCompatActivity {
         {
             doCheckEnvironmentExternalStorage();
         }
-
-        // NOW we can do stuff on the file system!
-        mapper();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -151,7 +148,7 @@ public class ItemListActivity extends AppCompatActivity {
         }
     }
 
-    // needed for pre-4.4-permission check
+    // needed for post-4.4-permission check
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if( (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) &&
                 (grantResults.length > 0) &&
@@ -160,10 +157,16 @@ public class ItemListActivity extends AppCompatActivity {
             doCheckEnvironmentExternalStorage();
         }
 
+
+        // if we ever need permission to read, here's the code for it
+        /*
         if( (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) &&
                 (grantResults.length > 0) &&
-                (grantResults[0] == PackageManager.PERMISSION_GRANTED) )
-        { /*empty*/ }
+                (grantResults[0] == PackageManager.PERMISSION_GRANTED) ) {
+            // nothing
+        }
+        */
+
     }
 
     private void doCheckEnvironmentExternalStorage() {
@@ -183,6 +186,11 @@ public class ItemListActivity extends AppCompatActivity {
                 break;
             default:
                 canRead = canWrite = true;
+        }
+
+        if(canWrite && canWrite) /* == true */ {
+            // NOW we can do stuff on the file system!
+            mapper();
         }
 
         //Log.d("michiyl", "canRead: " +canRead+ ", canWrite: " +canWrite);
