@@ -4,18 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +30,9 @@ import com.project.michiyl.mapfinder.dummy.DummyContent;
 import com.project.michiyl.mapfinder.dummy.MapContent;
 
 import java.io.File;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -43,8 +52,8 @@ public class ItemDetailFragment extends Fragment {
      */
     private DummyContent.DummyItem mItem;
     private MapContent.MapItem myMapItem;
-
-    static String[] imageIDs;
+    static Drawable myItemPreviewDrawable;  // image used in title bar of detail fragment
+    static String[] imageIDs;   // the paths to the images inside "images" folder
 
 
     // here we look inside a specific directory position and count the amount of images,
@@ -97,9 +106,6 @@ public class ItemDetailFragment extends Fragment {
     public ItemDetailFragment() {
     }
 
-
-    static Drawable myItemPreviewDrawable;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +120,6 @@ public class ItemDetailFragment extends Fragment {
             mItem = DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID));
             myMapItem = new MapContent.MapItem("Test Map", "mp_testmap", "This is the test map description. \nAnd a new line.");
             myMapItem.setIngameName(myMapItem.readNameFromFile(itemPosition-1,false));
-
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -191,12 +196,14 @@ public class ItemDetailFragment extends Fragment {
         //---returns an ImageView view---
         public View getView(final int position, View convertView, ViewGroup parent)
         {
+            final ViewGroup parentViewGroup = parent;
+
             final SquareImageView imageView;
             if (convertView == null) {
                 imageView = new SquareImageView(context);
                 //imageView.setLayoutParams(new GridView.LayoutParams(200, 200));
-                imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT,
-                                                                    GridView.LayoutParams.MATCH_PARENT));
+                imageView.setLayoutParams(new GridView.LayoutParams(MATCH_PARENT,
+                                                                    MATCH_PARENT));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(5, 5, 5, 5);
 
@@ -210,6 +217,35 @@ public class ItemDetailFragment extends Fragment {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        // create WindowManager parameters with which we fill a
+                        // WindowManager later on. Settings are:
+                        // - MATCH_PARENT (fill the screen) for height and width
+                        // - FLAG_LAYOUT_IN_SCREEN = show the (ImageView) view on the display,
+                        //   wherever the user has scrolled to
+                        // - translucent background pixels of this view
+                        WindowManager.LayoutParams mWindowParams = new WindowManager.LayoutParams();
+                        mWindowParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+                        mWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                        mWindowParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+                        mWindowParams.format = PixelFormat.TRANSLUCENT;
+
+                        Context mContext = getActivity();
+                        final ImageView myBigImageView = new ImageView(mContext);   // our new ImageView
+                        Bitmap bigImage = BitmapFactory.decodeFile(imageIDs[position]); // which image?
+                        myBigImageView.setImageBitmap(bigImage);
+                        myBigImageView.setVisibility(View.VISIBLE); // show it to the people
+                        final WindowManager mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+                        myBigImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                myBigImageView.setVisibility(View.INVISIBLE);   // don't show it
+                                mWindowManager.removeView(myBigImageView);  // fixes leakage
+                            }
+                        });
+                        mWindowManager.addView(myBigImageView, mWindowParams);  // add it and apply params
+
+                        /*
+                        // TODO: don't use existing ImageView, create fragment or dialog
                         final ImageView bigImageView = (ImageView) getActivity().findViewById(R.id.bigDetailImage);
                         Bitmap bigImage = BitmapFactory.decodeFile(imageIDs[position]);
                         bigImageView.setImageBitmap(bigImage);
@@ -221,6 +257,7 @@ public class ItemDetailFragment extends Fragment {
                                 bigImageView.setVisibility(View.INVISIBLE);
                             }
                         });
+                        */
                     }
                 });
 
