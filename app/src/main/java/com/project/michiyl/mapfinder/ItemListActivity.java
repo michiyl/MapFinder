@@ -68,8 +68,6 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
-        mapper();
-
         // let's ask for permissions in Android post-4.4
         if(Build.VERSION.SDK_INT >= 23) {
             if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &
@@ -88,6 +86,8 @@ public class ItemListActivity extends AppCompatActivity {
             doCheckEnvironmentExternalStorage();
         }
 
+        // NOW we can do stuff on the file system!
+        mapper();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -210,7 +210,7 @@ public class ItemListActivity extends AppCompatActivity {
         }
         else {
             // if not created - create it and run through again
-            dummyMapDir.mkdir();
+            dummyMapDir.mkdirs();
             mapper();
         }
     }
