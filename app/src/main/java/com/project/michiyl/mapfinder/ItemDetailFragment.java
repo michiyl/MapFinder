@@ -165,7 +165,8 @@ public class ItemDetailFragment extends Fragment {
     }
 
 
-
+    // ATTENTION: it gets messy in here - you've been warned!
+    // TODO: clean up the messiness!
     public class ImageAdapter extends BaseAdapter
     {
         private Context context;
@@ -240,6 +241,7 @@ public class ItemDetailFragment extends Fragment {
                             public void onClick(View view) {
                                 myBigImageView.setVisibility(View.INVISIBLE);   // don't show it
                                 mWindowManager.removeView(myBigImageView);  // fixes leakage
+                                // TODO: leakage error when switching from portrait to landscape mode
                             }
                         });
                         mWindowManager.addView(myBigImageView, mWindowParams);  // add it and apply params
