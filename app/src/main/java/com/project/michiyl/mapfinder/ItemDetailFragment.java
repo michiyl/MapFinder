@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
@@ -13,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -49,7 +50,7 @@ public class ItemDetailFragment extends Fragment {
     // here we look inside a specific directory position and count the amount of images,
     // then we initialize an array of Strings with this amount
     // and fill the array with the full path names
-    public static void findCorrectImageDirectory(int position) {
+    public static void findPreviewImage(int position) {
         String slashImagesSlash = "/images/";
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
@@ -68,15 +69,16 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
-    public static String findCorrectImageDirectory(int position, int imageIndexInDirectory) {
-
+    // TODO: delete and consolidate unnecessary files
+    // TODO: MOVE static stuff to a single class!
+    // this method is just for the preview images
+    public static String findPreviewImage(int position, int imageIndexInDirectory) {
         String slashImagesSlash = "/images/";
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
         File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
         String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
-
 
         if(myimages.list().length > 0) {
             return theSingleImagePath;
@@ -85,10 +87,7 @@ public class ItemDetailFragment extends Fragment {
             Uri path = Uri.parse("android.resource://com.project.michiyl.mapfinder/" + R.drawable.default_loadingscreen);
             return path.toString();
         }
-
     }
-
-
 
 
     /**
@@ -99,7 +98,7 @@ public class ItemDetailFragment extends Fragment {
     }
 
 
-
+    static Drawable myItemPreviewDrawable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,6 +121,8 @@ public class ItemDetailFragment extends Fragment {
             if (appBarLayout != null) {
                 //appBarLayout.setTitle(mItem.content);
                 appBarLayout.setTitle(myMapItem.getIngameName());
+                myItemPreviewDrawable = BitmapDrawable.createFromPath(ItemDetailFragment.findPreviewImage(itemPosition-1, 0));
+                appBarLayout.setBackground(myItemPreviewDrawable);
             }
         }
     }
@@ -135,6 +136,13 @@ public class ItemDetailFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.item_detailText)).setText(mItem.details);
             //((TextView) rootView.findViewById(R.id.item_detailText)).setText(myMapItem.getDescription());
         }
+
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
+            // when switching between Portrait and Landscape, re-assign the title bar image
+            appBarLayout.setBackground(myItemPreviewDrawable);
+        }
+
 
         // == Grid view stuff ==
         GridView gridView = (GridView) rootView.findViewById(R.id.detail_gridview);
@@ -163,7 +171,7 @@ public class ItemDetailFragment extends Fragment {
 
             int itemPosition = Integer.valueOf(String.valueOf(DummyContent.ITEM_HASHMAP.get(getArguments().getString(ARG_ITEM_ID))));
             Log.d("michiyl", "itemPosition: " + itemPosition);
-            findCorrectImageDirectory(itemPosition-1);  // itemPosition starts with 1, we need 0-based
+            findPreviewImage(itemPosition-1);  // itemPosition starts with 1, we need 0-based
         }
 
         //---returns the number of images---
@@ -198,7 +206,7 @@ public class ItemDetailFragment extends Fragment {
                 //   - after that it turns it visible
                 // this "big image" view also has a onClickListener which "closes" the image:
                 //   - it turns the image invisible after clicking on it
-                // TODO: increase performance
+                // TODO: increase performance while in "big image mode"
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

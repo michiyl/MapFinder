@@ -335,7 +335,13 @@ public class ItemListActivity extends AppCompatActivity {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(/*mValues.get(position).id*/ readNameFromFile(position, true));    // here we set the text
             holder.mContentView.setText(/*mValues.get(position).content + */ readNameFromFile(position, false)); // here, too!
-            Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findCorrectImageDirectory(position, 0));
+            Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
+            /*
+            TODO: Scale down preview image bitmap
+            Scaling down will increase performance in an anticipated performance
+            drop when there are many more items in the list.
+            HINT: First see if the recycler view handles this already in its own way.
+             */
             holder.mImageView.setImageBitmap(myItemPreview);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
