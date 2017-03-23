@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -43,6 +46,7 @@ import java.util.List;
  */
 public class ItemListActivity extends AppCompatActivity {
 
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -63,6 +67,8 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+
+        mapper();
 
         // let's ask for permissions in Android post-4.4
         if(Build.VERSION.SDK_INT >= 23) {
@@ -192,12 +198,35 @@ public class ItemListActivity extends AppCompatActivity {
         if(myMapDirectory.exists()) {
             createDummyFiles(dummyMapDir, "name_ingame.txt", "Dummy Map");
             createDummyFiles(dummyMapDir, "name_console.txt", "mp_dummymap");
-            createDummyFiles(dummyMapDir, "description.txt", "This is a description.\n With a new line!");
+            createDummyFiles(dummyMapDir, "description.txt", "This is a map description.\n With a new line!");
+            File imagesDirectory = new File(dummyMapDir, "/images/");
+            Log.d("michiyl", "imagesDirectory: " + imagesDirectory.getAbsolutePath());
+            if(! imagesDirectory.exists()) {
+                imagesDirectory.mkdirs();
+            }
+            else {
+                 createFirstImage(imagesDirectory);
+            }
         }
         else {
             // if not created - create it and run through again
             dummyMapDir.mkdir();
             mapper();
+        }
+    }
+
+
+
+    private void createFirstImage(File filepath) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_loadingscreen);
+        File saveTo = filepath;
+        String fileName = "placeholder.png";
+        File dest = new File(saveTo, fileName);
+        try (FileOutputStream fos = new FileOutputStream(dest)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 75, fos);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -211,23 +240,10 @@ public class ItemListActivity extends AppCompatActivity {
         File outputFile = new File(directory, "/"+filenameWithExtension);
 		//TODO: create boolean to check wether we can overwrite or not!
 		if(outputFile.exists()) {
-
-            /*
-            //make the file known to the media scanner so that it shows in Explorer without device reboot
-            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            intent.setData(Uri.fromFile(outputFile));
-            Log.d("michiyl", "intent Uri: " + outputFile + ", " + intent.toString());
-            sendBroadcast(intent);
-            */
-
-            // Taken from:
-            // https://skotagiri.wordpress.com/2012/08/23/make-files-created-by-android-applications-visible-in-windows-without-a-reboot/
-            MediaScannerHelper mediaScannerHelper = new MediaScannerHelper();
-            mediaScannerHelper.addFile(outputFile.getAbsolutePath().toString());
-
 			return;
 		}
 		else {
+            // TODO: try-with-resources
 			try {
 				FileOutputStream fos = new FileOutputStream(outputFile, false); // don't append -> overwrite!
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -238,6 +254,9 @@ public class ItemListActivity extends AppCompatActivity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+            MediaScannerHelper mediaScannerHelper = new MediaScannerHelper();
+            mediaScannerHelper.addFile(outputFile.getAbsolutePath().toString());
 		}
     }
 
@@ -264,12 +283,12 @@ public class ItemListActivity extends AppCompatActivity {
 
 
         /**
-         *
          * @param position        Which directory index are we going to read from?
          * @param readConsoleName If set to "true" method will read the <b>console</b> name file. <br>
          *                        If set to "false" method will read the <b>ingame</b> name file.
-         * @return
+         * @return A string formed from the single line inside the text file
          */
+        // TODO: generalize it more -> away with the boolean (and check the name instead?)
         public String readNameFromFile(int position, boolean readConsoleName) {
             int countOfDirectories = MapContent.MapItem.myMapDirectory.listFiles().length;
             if(countOfDirectories <= 0) {
@@ -296,7 +315,7 @@ public class ItemListActivity extends AppCompatActivity {
             Log.d("michiyl", "canRead myFile: " + myFile.canRead());
 
             try (BufferedReader br = new BufferedReader(new FileReader(myFile))) {
-                // read just the single line
+                // read just the single line - no need for line break
                 sb.append(br.readLine());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -316,6 +335,8 @@ public class ItemListActivity extends AppCompatActivity {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(/*mValues.get(position).id*/ readNameFromFile(position, true));    // here we set the text
             holder.mContentView.setText(/*mValues.get(position).content + */ readNameFromFile(position, false)); // here, too!
+            Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findCorrectImageDirectory(position, 0));
+            holder.mImageView.setImageBitmap(myItemPreview);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -349,12 +370,14 @@ public class ItemListActivity extends AppCompatActivity {
             public final TextView mIdView;
             public final TextView mContentView;
             public DummyContent.DummyItem mItem;
+            public final ImageView mImageView;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
+                mImageView = (ImageView) view.findViewById(R.id.listItem_previewPic);
             }
 
             @Override

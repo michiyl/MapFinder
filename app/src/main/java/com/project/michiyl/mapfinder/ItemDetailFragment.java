@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -48,7 +49,7 @@ public class ItemDetailFragment extends Fragment {
     // here we look inside a specific directory position and count the amount of images,
     // then we initialize an array of Strings with this amount
     // and fill the array with the full path names
-    static void findCorrectImageDirectory(int position) {
+    public static void findCorrectImageDirectory(int position) {
         String slashImagesSlash = "/images/";
         File theDirectory = MapContent.MapItem.myMapDirectory;
         String[] filenames = theDirectory.list();
@@ -66,6 +67,28 @@ public class ItemDetailFragment extends Fragment {
             imageIDs = new String[0];
         }
     }
+
+    public static String findCorrectImageDirectory(int position, int imageIndexInDirectory) {
+
+        String slashImagesSlash = "/images/";
+        File theDirectory = MapContent.MapItem.myMapDirectory;
+        String[] filenames = theDirectory.list();
+        File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
+        String[] filenames2 = myimages.list();
+        String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
+
+
+        if(myimages.list().length > 0) {
+            return theSingleImagePath;
+        }
+        else {
+            Uri path = Uri.parse("android.resource://com.project.michiyl.mapfinder/" + R.drawable.default_loadingscreen);
+            return path.toString();
+        }
+
+    }
+
+
 
 
     /**

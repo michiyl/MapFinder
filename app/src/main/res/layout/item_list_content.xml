@@ -22,13 +22,12 @@
         tools:ignore="UselessParent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/listItem_previewPic"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/imagebutton_deleteGrayBackground"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/placeholder_loadingscreen"/>
+            android:src="@drawable/default_loadingscreen"/>
 
         <TextView
             android:id="@+id/content"
