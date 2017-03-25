@@ -206,7 +206,7 @@ public class ItemListActivity extends AppCompatActivity {
         if(myMapDirectory.exists()) {
             createDummyFiles(dummyMapDir, "name_ingame.txt", "Dummy Map");
             createDummyFiles(dummyMapDir, "name_console.txt", "mp_dummymap");
-            createDummyFiles(dummyMapDir, "description.txt", "This is a map description.\n With a new line!");
+            createDummyFiles(dummyMapDir, "description.txt", "Enter your description here!");
             File imagesDirectory = new File(dummyMapDir, "/images/");
             Log.d("michiyl", "imagesDirectory: " + imagesDirectory.getAbsolutePath());
             if(! imagesDirectory.exists()) {
@@ -228,7 +228,7 @@ public class ItemListActivity extends AppCompatActivity {
     private void createFirstImage(File filepath) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_loadingscreen);
         File saveTo = filepath;
-        String fileName = "placeholder.png";
+        String fileName = "_placeholder.png";
         File dest = new File(saveTo, fileName);
         try (FileOutputStream fos = new FileOutputStream(dest)) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 75, fos);
@@ -236,6 +236,10 @@ public class ItemListActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	
+		MediaScannerHelper mediaScannerHelper = new MediaScannerHelper();
+		mediaScannerHelper.addFile(dest.getAbsolutePath().toString());
+        
     }
 
 
