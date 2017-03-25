@@ -25,11 +25,14 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.project.michiyl.mapfinder.dummy.DummyContent;
 import com.project.michiyl.mapfinder.dummy.MapContent;
 
 import java.io.File;
+import java.util.Arrays;
+
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -90,7 +93,8 @@ public class ItemDetailFragment extends Fragment {
         String[] filenames = theDirectory.list();
         File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
-        String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
+		Arrays.sort(filenames2);
+		String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
 
         if(myimages.list().length > 0) {
             return theSingleImagePath;
@@ -149,7 +153,9 @@ public class ItemDetailFragment extends Fragment {
         if (appBarLayout != null) {
             // when switching between Portrait and Landscape, re-assign the title bar image
             appBarLayout.setBackground(myItemPreviewDrawable);
-        }
+			// the appBarLayout item detail also needs to have the correct title text!
+			appBarLayout.setTitle(myMapItem.getIngameName());
+		}
 
 
         // == Grid view stuff ==
@@ -211,13 +217,13 @@ public class ItemDetailFragment extends Fragment {
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(5, 5, 5, 5);
 
-                // OnClickListener chaining:
+                // OnClickListener "chaining":
                 // the first listener "opens" the image:
                 //   - it fills the invisible "big image" view with the image that was clicked on,
                 //   - after that it turns it visible
                 // this "big image" view also has a onClickListener which "closes" the image:
                 //   - it turns the image invisible after clicking on it
-                // TODO: increase performance while in "big image mode"
+                // TODO: increase performance while in "big image mode" if necessary
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -250,7 +256,7 @@ public class ItemDetailFragment extends Fragment {
                         mWindowManager.addView(myBigImageView, mWindowParams);  // add it and apply params
 
                         /*
-                        // TODO: don't use existing ImageView, create fragment or dialog
+                        // TODOdone: don't use existing ImageView, create fragment or dialog
                         final ImageView bigImageView = (ImageView) getActivity().findViewById(R.id.bigDetailImage);
                         Bitmap bigImage = BitmapFactory.decodeFile(imageIDs[position]);
                         bigImageView.setImageBitmap(bigImage);

@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -347,14 +349,34 @@ public class ItemListActivity extends AppCompatActivity {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(/*mValues.get(position).id*/ readNameFromFile(position, true));    // here we set the text
             holder.mContentView.setText(/*mValues.get(position).content + */ readNameFromFile(position, false)); // here, too!
-            Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
+            
             /*
-            TODO: Scale down preview image bitmap
-            Scaling down will increase performance in an anticipated performance
-            drop when there are many more items in the list.
-            HINT: First see if the recycler view handles this already in its own way.
+            TODO: Increase performance for list item generation
+            Quickly scrolling down the list produces noticeable drops in
+            performance - this is barely acceptable!
+            - serialize items on startup, then load them everytime?
              */
-            holder.mImageView.setImageBitmap(myItemPreview);
+			Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
+			Bitmap scaledItemPreview = Bitmap.createScaledBitmap(myItemPreview, 512, 512, false);
+            holder.mImageView.setImageBitmap(scaledItemPreview);
+			
+			/*
+			int[][] states = new int[][] {
+					new int[] { android.R.attr.state_enabled}, // enabled
+					new int[] {-android.R.attr.state_enabled}, // disabled
+					new int[] {-android.R.attr.state_checked}, // unchecked
+					new int[] { android.R.attr.state_pressed}  // pressed
+			};
+	
+			int[] colors = new int[] {
+					Color.RED,
+					Color.RED,
+					Color.GREEN,
+					Color.BLUE
+			};
+			ColorStateList myList = new ColorStateList(states, colors);
+			holder.mIdView.setBackgroundTintList(myList);
+			*/
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
