@@ -277,6 +277,10 @@ public class ItemListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEM_LIST));
+		// some optimisations for the scrollable recyclerView
+		recyclerView.setDrawingCacheEnabled(true);
+		recyclerView.setItemViewCacheSize(20);
+		recyclerView.setHasFixedSize(true);
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -338,6 +342,9 @@ public class ItemListActivity extends AppCompatActivity {
                 e.printStackTrace();
                 Log.e("michiyl", "IOException!", e);
             }
+            myFile = null;
+			filenames = null;
+			theDirectory = null;
 
             //Log.d("michiyl", "sb: " + sb.toString());
             return sb.toString();
@@ -347,14 +354,14 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(/*mValues.get(position).id*/ readNameFromFile(position, true));    // here we set the text
-            holder.mContentView.setText(/*mValues.get(position).content + */ readNameFromFile(position, false)); // here, too!
+            holder.mIdView.setText(readNameFromFile(position, true));    // here we set the text
+            holder.mContentView.setText(readNameFromFile(position, false)); // here, too!
             
             /*
             TODO: Increase performance for list item generation
             Quickly scrolling down the list produces noticeable drops in
             performance - this is barely acceptable!
-            - serialize items on startup, then load them everytime?
+            - serialize items on startup, then load them everytime instead?
              */
 			Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
 			Bitmap scaledItemPreview = Bitmap.createScaledBitmap(myItemPreview, 512, 512, false);

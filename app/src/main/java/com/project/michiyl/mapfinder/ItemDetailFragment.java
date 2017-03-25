@@ -93,13 +93,15 @@ public class ItemDetailFragment extends Fragment {
         String[] filenames = theDirectory.list();
         File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
-		Arrays.sort(filenames2);
+		Arrays.sort(filenames2);	// sort it so that image starting with "_" comes first
 		String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
 
         if(myimages.list().length > 0) {
             return theSingleImagePath;
         }
         else {
+			// if there is not a single image there, just take one from our asset list
+			// TODO: check whether we still need to copy an image file
             Uri path = Uri.parse("android.resource://com.project.michiyl.mapfinder/" + R.drawable.default_loadingscreen);
             return path.toString();
         }
