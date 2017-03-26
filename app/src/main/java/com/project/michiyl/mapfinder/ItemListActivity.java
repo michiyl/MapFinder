@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -353,19 +354,24 @@ public class ItemListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(readNameFromFile(position, true));    // here we set the text
-            holder.mContentView.setText(readNameFromFile(position, false)); // here, too!
+			
+			Log.i("michiyl", "onBindViewHolder: " + holder + ", position: " + position);
+			final int myPositionForRunnable = position;
+			holder.mItem = mValues.get(position);
+	
+			// another thread can handle inserting the item informations:
+			new Handler().post(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					holder.mIdView.setText(readNameFromFile(myPositionForRunnable, true));    // here we set the text
+					holder.mContentView.setText(readNameFromFile(myPositionForRunnable, false)); // here, too!
+					
+					setViewHolderBitmap(holder, myPositionForRunnable);
+				}
+			});
             
-            /*
-            TODO: Increase performance for list item generation
-            Quickly scrolling down the list produces noticeable drops in
-            performance - this is barely acceptable!
-            - serialize items on startup, then load them everytime instead?
-             */
-			Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
-			Bitmap scaledItemPreview = Bitmap.createScaledBitmap(myItemPreview, 512, 512, false);
-            holder.mImageView.setImageBitmap(scaledItemPreview);
 			
 			/*
 			int[][] states = new int[][] {
@@ -406,8 +412,21 @@ public class ItemListActivity extends AppCompatActivity {
                 }
             });
         }
-
-        @Override
+	
+	
+		/*
+		TODO: Increase performance for list item generation
+		Quickly scrolling down the list produces noticeable drops in
+		performance - this is barely acceptable!
+		- serialize items on startup, then load them everytime instead?
+		 */
+		private void setViewHolderBitmap(ViewHolder holder, int position) {
+			Bitmap myItemPreview = BitmapFactory.decodeFile(ItemDetailFragment.findPreviewImage(position, 0));
+			Bitmap scaledItemPreview = Bitmap.createScaledBitmap(myItemPreview, 512, 512, false);
+			holder.mImageView.setImageBitmap(scaledItemPreview);
+		}
+	
+		@Override
         public int getItemCount() {
             return mValues.size();
         }
