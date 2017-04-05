@@ -14,11 +14,27 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
+
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:weightSum="1">
+
+            <SearchView
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:actionViewClass="android.widget.SearchView"
+                android:icon="@mipmap/ic_launcher"
+                android:showAsAction="collapseActionView|ifRoom"
+                android:title="Search"/>
+        </android.support.v7.widget.Toolbar>
+
+
+
 
     </android.support.design.widget.AppBarLayout>
 

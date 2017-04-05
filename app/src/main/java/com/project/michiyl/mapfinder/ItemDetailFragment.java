@@ -94,6 +94,7 @@ public class ItemDetailFragment extends Fragment {
         File myimages = new File(theDirectory + "/" + filenames[position], slashImagesSlash);
         String[] filenames2 = myimages.list();
 		Arrays.sort(filenames2);	// sort it so that image starting with "_" comes first
+        //TODO: change here if you have the settings for choosing preview image
 		String theSingleImagePath = theDirectory + "/" + filenames[position] + slashImagesSlash + filenames2[imageIndexInDirectory];
 
         if(myimages.list().length > 0) {
@@ -239,7 +240,9 @@ public class ItemDetailFragment extends Fragment {
                         mWindowParams.height = WindowManager.LayoutParams.MATCH_PARENT;
                         mWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
                         mWindowParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-                        mWindowParams.format = PixelFormat.TRANSLUCENT;
+	                    mWindowParams.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                        mWindowParams.format = PixelFormat.RGBA_8888;    //.TRANSLUCENT;
+	                    mWindowParams.dimAmount = 0.75f;
 
                         Context mContext = getActivity();
                         final ImageView myBigImageView = new ImageView(mContext);   // our new ImageView
